@@ -20,7 +20,7 @@ class Hybrid_Providers_PRX extends Hybrid_Provider_Model_OAuth2
 		parent::initialize();
 
 		// Provider apis end-points
-		$this->api->api_base_url  = "https://www.prx.org/v2/";
+		$this->api->api_base_url  = "https://www.prx.org";
 		$this->api->authorize_url = "https://www.prx.org/oauth/authorize";
 		$this->api->token_url     = "https://www.prx.org/oauth/access_token"; 
 
@@ -32,26 +32,26 @@ class Hybrid_Providers_PRX extends Hybrid_Provider_Model_OAuth2
 	*/
 	function getUserProfile()
 	{
-/**		$data = $this->api->api( "/me" ); 
+		$response = $this->api->api( "/me" ); 
 
-		if ( ! isset( $data->response->user->id ) ){
-			throw new Exception( "User profile request failed! {$this->providerId} returned an invalide response.", 6 );
+		// check the last HTTP status code returned
+		if ( $this->api->http_code != 200 ){
+			throw new Exception( "User profile request failed! {$this->providerId} returned an error. " . $this->errorMessageByStatus( $this->api->http_code ), 6 );
 		}
 
-		$data = $data->response->user;
+		if ( ! is_object( $response ) || ! isset( $response->id ) ){
+			throw new Exception( "User profile request failed! {$this->providerId} api returned an invalid response.", 6 );
+		}
 
-		$this->user->profile->identifier    = $data->id;
-		$this->user->profile->firstName     = $data->firstName;
-		$this->user->profile->lastName      = $data->lastName;
-		$this->user->profile->displayName   = trim( $this->user->profile->firstName . " " . $this->user->profile->lastName );
-		$this->user->profile->photoURL      = $data->photo;
-		$this->user->profile->profileURL    = $data->canonicalUrl;
-		$this->user->profile->gender        = $data->gender;
-		$this->user->profile->city          = $data->homeCity;
-		$this->user->profile->email         = $data->contact->email;
-		$this->user->profile->emailVerified = $data->contact->email;
+		$data = $data->response->info;
 
-**/
+		$this->user->profile->identifier    = (property_exists($data,'id'))?$data->id:"";
+		$this->user->profile->firstName     = (property_exists($data,'first_name'))?$data->first_name:"";
+		$this->user->profile->lastName      = (property_exists($data,'last_name'))?$data->last_name:"";
+		$this->user->profile->displayName   = (property_exists($data,'login'))?$data->login:"";
+		$this->user->profile->email         = (property_exists($data,'email'))?$data->email:"";
+		$this->user->profile->emailVerified = (property_exists($data,'email'))?$data->email:"";
+
 		return $this->user->profile;
 	}
 }
