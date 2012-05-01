@@ -41,7 +41,7 @@ $WORDPRESS_SOCIAL_LOGIN_PROVIDERS_CONFIG = ARRAY(
 		"require_client_id" => TRUE, 
 		"new_app_link"      => "https://www.prx.org/oauth-clients", 
 	)
-	.
+	,
 	ARRAY( 
 		"provider_id"       => "Foursquare",
 		"provider_name"     => "Foursquare",
